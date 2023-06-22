@@ -32,6 +32,7 @@ class Hdf5(TestSet):
         super().__init__()
         data_path = os.path.dirname(os.path.abspath(__file__))
         self.data_dir = os.path.join(data_path, "data")
+        self.optimal_cost = 1e-18
     @property
     def title(self) -> str:
         """Test set title."""
@@ -88,9 +89,9 @@ class Hdf5(TestSet):
                     qp_data[data_name] = data
                 else:
                     qp_data[data_name] = None
-                qp_data["name"] = problem
+                qp_data["name"] = os.path.split(file.filename)[1][:-5] + "_" + problem
             qp_problem = Problem(**qp_data)
-            qp_problem.optimal_cost = 1e-18
+            qp_problem.optimal_cost = self.optimal_cost
             yield qp_problem
 
     def __iter__(self) -> Iterator[Problem]:
