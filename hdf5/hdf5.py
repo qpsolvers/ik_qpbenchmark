@@ -69,14 +69,15 @@ class Hdf5(TestSet):
         return False
     
     def yield_sequence_from_file(self, file):
-        """_summary_
+        """
+        Yield sequence of problems from a file.
 
         Args:
-            file (_type_): _description_
+            file (h5py.File): The file object from which to yield the problems.
 
         Yields:
-            _type_: _description_
-        """
+            qpsolvers.Problem : A problem object containing the data from the file.
+    """
         group = file["ik_Problem"]
         for problem in list(group.keys()):
             qp_data = {}
@@ -89,7 +90,7 @@ class Hdf5(TestSet):
                     qp_data[data_name] = data
                 else:
                     qp_data[data_name] = None
-                qp_data["name"] = os.path.split(file.filename)[1][:-5] + "_" + problem
+                qp_data["name"] = os.path.split(file.filename)[1].replace(".hdf5", "") + "_" + problem
             qp_problem = Problem(**qp_data)
             qp_problem.optimal_cost = self.optimal_cost
             yield qp_problem
