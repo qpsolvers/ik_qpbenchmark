@@ -86,7 +86,6 @@ class Hdf5(TestSet):
                     data = group[f"{problem}/{data_name}/data"][:]
                     data[data > 9e19] = + np.inf
                     data[data < -9e19] = - np.inf
-                    # qp_data[data_name] = group[f"{problem}/{data_name}/data"][:]
                     qp_data[data_name] = data
                 else:
                     qp_data[data_name] = None
