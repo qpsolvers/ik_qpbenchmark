@@ -16,9 +16,7 @@ from qpbenchmark.test_set import TestSet
 
 
 class InverseKinematics(TestSet):
-    """
-    Differential inverse kinematics test set.
-    """
+    """IK test set."""
 
     @property
     def description(self) -> str:
