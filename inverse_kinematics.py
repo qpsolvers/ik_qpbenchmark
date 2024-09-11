@@ -15,16 +15,18 @@ from qpbenchmark.test_set import TestSet
 from qpbenchmark.tolerance import Tolerance
 
 
-class Hdf5(TestSet):
+class InverseKinematics(TestSet):
     """
-    HDF5 Testset
+    Differential inverse kinematics test set.
     """
 
     @property
     def description(self) -> str:
         """Description of the test set."""
-        return "hdf5 test set, contains qp problems related to robots movements"
-    
+        return (
+            "hdf5 test set, contains qp problems related to robots movements"
+        )
+
     def __init__(self):
         """Initialize test set.
 
@@ -35,41 +37,43 @@ class Hdf5(TestSet):
         data_path = os.path.dirname(os.path.abspath(__file__))
         self.data_dir = os.path.join(data_path, "data")
         self.optimal_cost = 1e-18
+
     @property
     def title(self) -> str:
         """Test set title."""
         return "GitHub free-for-all test set"
+
     def define_tolerances(self) -> None:
         """Define test set tolerances."""
         self.tolerances = {
-        "default": Tolerance(
-            cost=1e-4,     
-            primal=1e-3,   
-            dual=1e-3,     
-            gap=1e-3,     
-            runtime=1,
-        ),
-        "low_accuracy": Tolerance(
-            cost=1e-3,     
-            primal=1e-3,    
-            dual=1e-3,      
-            gap=1e-4,       
-            runtime=1, 
-        ),
-        "high_accuracy": Tolerance(
-            cost=1e-5,     
-            primal=1e-7,   
-            dual=1e-7,     
-            gap=1e-3,      
-            runtime=1,
-        ),
-    }
+            "default": Tolerance(
+                cost=1e-4,
+                primal=1e-3,
+                dual=1e-3,
+                gap=1e-3,
+                runtime=1,
+            ),
+            "low_accuracy": Tolerance(
+                cost=1e-3,
+                primal=1e-3,
+                dual=1e-3,
+                gap=1e-4,
+                runtime=1,
+            ),
+            "high_accuracy": Tolerance(
+                cost=1e-5,
+                primal=1e-7,
+                dual=1e-7,
+                gap=1e-3,
+                runtime=1,
+            ),
+        }
 
     @property
     def sparse_only(self) -> bool:
         """Test set is dense."""
         return False
-    
+
     def yield_sequence_from_file(self, file):
         """
         Yield sequence of problems from a file.
@@ -78,20 +82,25 @@ class Hdf5(TestSet):
             file (h5py.File): The file object from which to yield the problems.
 
         Yields:
-            qpsolvers.Problem : A problem object containing the data from the file.
-    """
+            qpsolvers.Problem : A problem object containing the data from the
+            file.
+        """
         group = file["ik_Problem"]
         for problem in list(group.keys()):
             qp_data = {}
             for data_name in group[problem].keys():
                 if f"{data_name}/data" in group[problem]:
                     data = group[f"{problem}/{data_name}/data"][:]
-                    data[data > 9e19] = + np.inf
-                    data[data < -9e19] = - np.inf
+                    data[data > 9e19] = +np.inf
+                    data[data < -9e19] = -np.inf
                     qp_data[data_name] = data
                 else:
                     qp_data[data_name] = None
-                qp_data["name"] = os.path.split(file.filename)[1].replace(".hdf5", "") + "_" + problem
+                qp_data["name"] = (
+                    os.path.split(file.filename)[1].replace(".hdf5", "")
+                    + "_"
+                    + problem
+                )
             qp_problem = Problem(**qp_data)
             qp_problem.optimal_cost = self.optimal_cost
             yield qp_problem
@@ -104,6 +113,12 @@ class Hdf5(TestSet):
             filepath = os.path.join(self.data_dir, filename)
             with h5.File(filepath, "r") as file:
                 yield from self.yield_sequence_from_file(file)
-                
 
 
+if __name__ == "__main__":
+    test_set_path = os.path.abspath(__file__)
+    test_set_dir = os.path.dirname(test_set_path)
+    main(
+        test_set_path=test_set_path,
+        results_path=f"{test_set_dir}/results/qpbenchmark_results.csv",
+    )
