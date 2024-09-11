@@ -7,12 +7,12 @@
 import os
 from typing import Iterator
 
-import h5py as h5
+import h5py
 import numpy as np
+import qpsolvers
 from qpbenchmark.benchmark import main
 from qpbenchmark.problem import Problem
 from qpbenchmark.test_set import TestSet
-from qpbenchmark.tolerance import Tolerance
 
 
 class InverseKinematics(TestSet):
@@ -24,66 +24,32 @@ class InverseKinematics(TestSet):
     def description(self) -> str:
         """Description of the test set."""
         return (
-            "hdf5 test set, contains qp problems related to robots movements"
+            "Differential inverse kinematics QP problems "
+            "generated from robot motions"
         )
-
-    def __init__(self):
-        """Initialize test set.
-
-        Args:
-            data_dir: Path to the benchmark data directory.
-        """
-        super().__init__()
-        data_path = os.path.dirname(os.path.abspath(__file__))
-        self.data_dir = os.path.join(data_path, "data")
-        self.optimal_cost = 1e-18
 
     @property
     def title(self) -> str:
-        """Test set title."""
-        return "GitHub free-for-all test set"
-
-    def define_tolerances(self) -> None:
-        """Define test set tolerances."""
-        self.tolerances = {
-            "default": Tolerance(
-                cost=1e-4,
-                primal=1e-3,
-                dual=1e-3,
-                gap=1e-3,
-                runtime=1,
-            ),
-            "low_accuracy": Tolerance(
-                cost=1e-3,
-                primal=1e-3,
-                dual=1e-3,
-                gap=1e-4,
-                runtime=1,
-            ),
-            "high_accuracy": Tolerance(
-                cost=1e-5,
-                primal=1e-7,
-                dual=1e-7,
-                gap=1e-3,
-                runtime=1,
-            ),
-        }
+        return "IK test set"
 
     @property
     def sparse_only(self) -> bool:
-        """Test set is dense."""
         return False
 
-    def yield_sequence_from_file(self, file):
-        """
-        Yield sequence of problems from a file.
+    def __init__(self):
+        """Initialize test set."""
+        super().__init__()
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.data_dir = os.path.join(current_dir, "data")
+
+    def yield_sequence_from_file(self, file: h5py.File) -> qpsolvers.Problem:
+        """Yield sequence of problems from a file.
 
         Args:
-            file (h5py.File): The file object from which to yield the problems.
+            file: The file object from which to yield the problems.
 
         Yields:
-            qpsolvers.Problem : A problem object containing the data from the
-            file.
+            Problem object read from file.
         """
         group = file["ik_Problem"]
         for problem in list(group.keys()):
@@ -102,7 +68,6 @@ class InverseKinematics(TestSet):
                     + problem
                 )
             qp_problem = Problem(**qp_data)
-            qp_problem.optimal_cost = self.optimal_cost
             yield qp_problem
 
     def __iter__(self) -> Iterator[Problem]:
@@ -111,7 +76,7 @@ class InverseKinematics(TestSet):
             if not filename.endswith(".hdf5"):
                 continue
             filepath = os.path.join(self.data_dir, filename)
-            with h5.File(filepath, "r") as file:
+            with h5py.File(filepath, "r") as file:
                 yield from self.yield_sequence_from_file(file)
 
 
