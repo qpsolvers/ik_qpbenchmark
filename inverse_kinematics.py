@@ -1,16 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2024 Inria
 
-from typing import Iterator
 import os
+from typing import Iterator
+
 import h5py as h5
 import numpy as np
-import scipy.io as spio
-import scipy.sparse as spa
-from typing import Dict, Iterator, Union
-# from qpsolvers import Problem
-from qpsolvers_benchmark.problem import Problem
-from qpsolvers_benchmark.test_set import TestSet
-from qpsolvers_benchmark.tolerance import Tolerance
-from pprint import pprint 
+from qpbenchmark.benchmark import main
+from qpbenchmark.problem import Problem
+from qpbenchmark.test_set import TestSet
+from qpbenchmark.tolerance import Tolerance
 
 
 class Hdf5(TestSet):
