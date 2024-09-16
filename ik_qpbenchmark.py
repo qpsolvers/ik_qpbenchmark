@@ -9,13 +9,12 @@ from typing import Iterator
 
 import h5py
 import numpy as np
-import qpsolvers
+import qpbenchmark
+from qpbenchmark import Problem
 from qpbenchmark.benchmark import main
-from qpbenchmark.problem import Problem
-from qpbenchmark.test_set import TestSet
 
 
-class InverseKinematics(TestSet):
+class IkQpbenchmark(qpbenchmark.TestSet):
     """IK test set."""
 
     @property
@@ -39,8 +38,16 @@ class InverseKinematics(TestSet):
         super().__init__()
         current_dir = os.path.dirname(os.path.abspath(__file__))
         self.data_dir = os.path.join(current_dir, "data")
+        self.__add_known_solver_issues()
+        self.__add_known_solver_timeouts()
 
-    def yield_sequence_from_file(self, file: h5py.File) -> qpsolvers.Problem:
+    def __add_known_solver_issues(self):
+        """See how this is done in the maros_meszaros_qpbenchmark."""
+
+    def __add_known_solver_timeouts(self):
+        """See how this is done in the maros_meszaros_qpbenchmark."""
+
+    def yield_sequence_from_file(self, file: h5py.File) -> Iterator[Problem]:
         """Yield sequence of problems from a file.
 
         Args:
