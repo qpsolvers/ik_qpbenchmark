@@ -14,6 +14,7 @@ dependencies:
     - osqp >= 0.6.2
     - pip
     - piqp >= 0.2.2
+    - pink
     - proxsuite >= 0.4.1
     - qpbenchmark >= 2.3.0
     - qpoases >= 3.2.0
