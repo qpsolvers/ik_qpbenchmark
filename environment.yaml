@@ -10,15 +10,17 @@ dependencies:
     - h5py
     - ipython
     - matplotlib
+    - meshcat-shapes
     - numpy >= 1.25.2
     - osqp >= 0.6.2
+    - pink
     - pip
     - piqp >= 0.2.2
-    - pink
     - proxsuite >= 0.4.1
     - qpbenchmark >= 2.3.0
     - qpoases >= 3.2.0
     - quadprog >= 0.1.11
+    - robot_descriptions
     - pip:
         - clarabel >= 0.4.1
         - highspy >= 1.5.2
