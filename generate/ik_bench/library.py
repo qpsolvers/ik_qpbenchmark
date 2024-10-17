@@ -1082,4 +1082,193 @@ scenarios["valkyrie"] = Scenario(
 
 # =============================================================================
 
+scenarios["bolt"] = Scenario(
+    name="bolt",
+    duration=10.0,  # [s]
+    robot_description="bolt_description",
+    root_joint=pin.JointModelFreeFlyer(),
+    trajectories=[
+        LIPMWalkingTrajectory(
+            FrameTask(
+                "root_joint",
+                position_cost=1.0,
+                orientation_cost=0.1,
+            ),
+            dsp_duration=0.1,  # [s]
+            foot_size=(0.05, 0.01),  # [m]
+            foot_spacing=0.22,
+            lateral_offset=-0.02,  # should match swing-foot trajectories
+            left_foot_frame="FL_FOOT",
+            nb_timesteps=16,
+            sampling_period=0.1,  # [s]
+            ssp_duration=0.7,  # [s]
+            stride=0.2,
+            transform_target_to_root=pin.SE3(
+                rotation=np.eye(3),
+                translation=np.array([-0.05, 0.0, -0.1]),
+            ),
+        ),
+        SwingFootTrajectory(
+            FrameTask(
+                "FL_FOOT",
+                position_cost=1.0,  # [cost] / [m]
+                orientation_cost=0.1,  # [cost] / [rad]
+            ),
+            cycle_duration=1.6,  # [s]
+            height=0.05,  # [m]
+            is_lead_foot=False,
+            lateral_offset=-0.02,  # [m]
+            stride=0.2,  # [m]
+            swing_end=1.5,  # [s]
+            swing_start=0.8,  # [s]
+        ),
+        SwingFootTrajectory(
+            FrameTask(
+                "FR_FOOT",
+                position_cost=1.0,  # [cost] / [m]
+                orientation_cost=0.1,  # [cost] / [rad]
+            ),
+            cycle_duration=1.6,  # [s]
+            height=0.05,  # [m]
+            is_lead_foot=True,
+            lateral_offset=0.02,  # [m]
+            stride=0.2,  # [m]
+            swing_end=0.7,
+            swing_start=0.0,
+        ),
+    ],
+)
+
+# =============================================================================
+
+scenarios["cassie"] = Scenario(
+    name="cassie",
+    duration=10.0,  # [s]
+    robot_description="cassie_description",
+    root_joint=pin.JointModelFreeFlyer(),
+    initial_configuration={
+        "LeftFootPitch": [-1.0],
+        "RightFootPitch": [-1.0],
+        "LeftAchillesSpring": [2.0],
+        "RightAchillesSpring": [2.0],
+        "root_joint": pin.SE3ToXYZQUAT(
+            pin.SE3(
+                rotation=np.eye(3),
+                translation=np.array([0.0, 0.0, 1.15]),
+            )
+        ),
+    },
+    trajectories=[
+        LIPMWalkingTrajectory(
+            FrameTask(
+                "root_joint",
+                position_cost=1.0,
+                orientation_cost=0.5,
+            ),
+            dsp_duration=0.1,  # [s]
+            foot_size=(0.05, 0.01),  # [m]
+            foot_spacing=0.24,
+            lateral_offset=-0.02,  # should match swing-foot trajectories
+            left_foot_frame="leftfoot",
+            nb_timesteps=16,
+            sampling_period=0.1,  # [s]
+            ssp_duration=0.7,  # [s]
+            stride=0.3,
+            transform_target_to_root=pin.SE3(
+                rotation=np.eye(3),
+                translation=np.array([-0.05, 0.0, -0.15]),
+            ),
+        ),
+        SwingFootTrajectory(
+            FrameTask(
+                "leftfoot",
+                position_cost=1.0,  # [cost] / [m]
+                orientation_cost=0.1,  # [cost] / [rad]
+            ),
+            cycle_duration=1.6,  # [s]
+            height=0.05,  # [m]
+            is_lead_foot=False,
+            lateral_offset=-0.02,  # [m]
+            stride=0.3,  # [m]
+            swing_end=1.5,  # [s]
+            swing_start=0.8,  # [s]
+        ),
+        SwingFootTrajectory(
+            FrameTask(
+                "rightfoot",
+                position_cost=1.0,  # [cost] / [m]
+                orientation_cost=0.1,  # [cost] / [rad]
+            ),
+            cycle_duration=1.6,  # [s]
+            height=0.05,  # [m]
+            is_lead_foot=True,
+            lateral_offset=0.02,  # [m]
+            stride=0.3,  # [m]
+            swing_end=0.7,
+            swing_start=0.0,
+        ),
+    ],
+)
+
+# =============================================================================
+
+scenarios["spryped"] = Scenario(
+    name="spryped",
+    duration=10.0,  # [s]
+    robot_description="spryped_description",
+    root_joint=pin.JointModelFreeFlyer(),
+    trajectories=[
+        LIPMWalkingTrajectory(
+            FrameTask(
+                "root_joint",
+                position_cost=1.0,
+                orientation_cost=0.5,
+            ),
+            dsp_duration=0.1,  # [s]
+            foot_size=(0.05, 0.01),  # [m]
+            foot_spacing=0.24,
+            lateral_offset=-0.02,  # should match swing-foot trajectories
+            left_foot_frame="left toe",
+            nb_timesteps=16,
+            sampling_period=0.1,  # [s]
+            ssp_duration=0.7,  # [s]
+            stride=0.3,
+            transform_target_to_root=pin.SE3(
+                rotation=np.eye(3),
+                translation=np.array([-0.1, 0.0, -0.1]),
+            ),
+        ),
+        SwingFootTrajectory(
+            FrameTask(
+                "left toe",
+                position_cost=1.0,  # [cost] / [m]
+                orientation_cost=0.1,  # [cost] / [rad]
+            ),
+            cycle_duration=1.6,  # [s]
+            height=0.05,  # [m]
+            is_lead_foot=False,
+            lateral_offset=-0.02,  # [m]
+            stride=0.3,  # [m]
+            swing_end=1.5,  # [s]
+            swing_start=0.8,  # [s]
+        ),
+        SwingFootTrajectory(
+            FrameTask(
+                "right toe",
+                position_cost=1.0,  # [cost] / [m]
+                orientation_cost=0.1,  # [cost] / [rad]
+            ),
+            cycle_duration=1.6,  # [s]
+            height=0.05,  # [m]
+            is_lead_foot=True,
+            lateral_offset=0.02,  # [m]
+            stride=0.3,  # [m]
+            swing_end=0.7,
+            swing_start=0.0,
+        ),
+    ],
+)
+
+# =============================================================================
+
 __all__ = ["scenarios"]
