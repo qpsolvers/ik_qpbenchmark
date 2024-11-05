@@ -90,6 +90,7 @@ if __name__ == "__main__":
         else list(pink_bench.scenarios.keys())
     )
     data_dir = Path(__file__).resolve().parent.parent / "data"
+    problems = qpbenchmark.ProblemList()
     for scenario_name in scenarios:
         logging.info('Generating problems for scenario "%s"...', scenario_name)
         scenario = pink_bench.scenarios[scenario_name]
@@ -97,10 +98,12 @@ if __name__ == "__main__":
         if args.plot_mpc_axis is not None:
             plot_axis = 0 if args.plot_mpc_axis == "x" else 1
             scene.plot_mpc_axis(plot_axis)
-        problems = generate_problems(
-            scene,
-            scenario_name,
-            dt=args.timestep,
-            qpsolver=args.qpsolver,
+        problems.extend(
+            generate_problems(
+                scene,
+                scenario_name,
+                dt=args.timestep,
+                qpsolver=args.qpsolver,
+            )
         )
-        problems.to_parquet(data_dir / f"{scenario_name}.parquet")
+    problems.to_parquet(data_dir / "ik_qpbenchmark.parquet")
