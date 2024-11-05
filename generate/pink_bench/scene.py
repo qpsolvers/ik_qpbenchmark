@@ -160,9 +160,9 @@ class Scene:
         if self.visualizer is not None:
             self.visualizer.display(self.configuration.q)
             if self.record:
-                fname = f"videos/meshcat_{self.recording_index:04d}.png"
+                fname = f"{self.scenario.name}_{self.recording_index:04d}.png"
                 self.recording_index += 1
-                with open(fname, "wb") as fp:
+                with open(f"videos/{fname}", "wb") as fp:
                     self.viewer.get_image().save(fp)
 
     def step(self, dt: float, solver: str) -> None:
