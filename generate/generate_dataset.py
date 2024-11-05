@@ -26,12 +26,6 @@ def parse_command_line_arguments() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--damping",
-        help="Thikonov damping value for differential IK",
-        type=float,
-        default=1e-12,
-    )
-    parser.add_argument(
         "--plot-mpc-axis",
         help="plot to debug LIP model predictive control",
         choices=("x", "y", None),
@@ -68,12 +62,11 @@ def generate_problems(
     scenario_name: str,
     dt: float,
     qpsolver: str,
-    damping: float,
 ) -> qpbenchmark.ProblemList:
     problems = qpbenchmark.ProblemList()
     for it_num, t in enumerate(np.arange(0.0, scenario.duration, dt)):
         scene.step_targets(dt)
-        qp = build_ik(scene.configuration, scene.tasks, dt, damping=damping)
+        qp = build_ik(scene.configuration, scene.tasks, dt)
         problems.append(
             qpbenchmark.Problem.from_qpsolvers(
                 qp,
@@ -109,6 +102,5 @@ if __name__ == "__main__":
             scenario_name,
             dt=args.timestep,
             qpsolver=args.qpsolver,
-            damping=args.damping,
         )
         problems.to_parquet(data_dir / f"{scenario_name}.parquet")
