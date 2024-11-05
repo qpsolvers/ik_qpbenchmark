@@ -52,6 +52,12 @@ class Scene:
         if visualize:
             visualizer = start_meshcat_visualizer(robot)
             viewer = visualizer.viewer
+            viewer["/Background"].set_property("top_color", [1] * 3)
+            viewer["/Background"].set_property("bottom_color", [1] * 3)
+            viewer["/Grid"].set_property("visible", False)
+            viewer["/Cameras/default/rotated/<object>"].set_property(
+                "zoom", 2.0
+            )
 
         if len(scenario.trajectories) < 1:
             robot_frames = [
