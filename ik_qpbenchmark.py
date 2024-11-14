@@ -47,7 +47,7 @@ class IkQpbenchmark(qpbenchmark.TestSet):
     def __add_known_solver_timeouts(self):
         """See how this is done in the maros_meszaros_qpbenchmark."""
 
-    def yield_sequence_from_file(self, file: h5py.File) -> Iterator[Problem]:
+    def yield_problems_from_file(self, file: h5py.File) -> Iterator[Problem]:
         """Yield sequence of problems from a file.
 
         Args:
@@ -83,7 +83,7 @@ class IkQpbenchmark(qpbenchmark.TestSet):
                 continue
             filepath = os.path.join(self.data_dir, filename)
             with h5py.File(filepath, "r") as file:
-                yield from self.yield_sequence_from_file(file)
+                yield from self.yield_problems_from_file(file)
 
 
 if __name__ == "__main__":
