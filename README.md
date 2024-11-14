@@ -6,7 +6,7 @@ This repository contains quadratic programs (QPs) arising from differential inve
 
 ## Installation
 
-The recommended process is to install the benchmark and all solvers in an isolated environment using ``conda``:
+The recommended process is to install the benchmark and all solvers in an isolated environment using `conda`:
 
 ```console
 conda env create -f environment.yaml
