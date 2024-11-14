@@ -56,22 +56,23 @@ class IkQpbenchmark(qpbenchmark.TestSet):
         Yields:
             Problem object read from file.
         """
-        group = file["ik_Problem"]
-        for problem in list(group.keys()):
-            qp_data = {}
-            for data_name in group[problem].keys():
-                if f"{data_name}/data" in group[problem]:
-                    data = group[f"{problem}/{data_name}/data"][:]
+        problems = file.get("problems")
+        if problems is None and "ik_Problem" in file:
+            problems = file["ik_Problem"]  # TODO: legacy
+        problem_names = list(problems.keys())
+        name_prefix = os.path.basename(file.filename).replace(".hdf5", "")
+        for problem in problem_names:
+            qp_data = {
+                "name": f"{name_prefix}_{problem}",
+            }
+            for data_name in problems[problem].keys():
+                if f"{data_name}/data" in problems[problem]:
+                    data = problems[f"{problem}/{data_name}/data"][:]
                     data[data > 9e19] = +np.inf
                     data[data < -9e19] = -np.inf
                     qp_data[data_name] = data
                 else:
                     qp_data[data_name] = None
-                qp_data["name"] = (
-                    os.path.split(file.filename)[1].replace(".hdf5", "")
-                    + "_"
-                    + problem
-                )
             qp_problem = Problem(**qp_data)
             yield qp_problem
 
