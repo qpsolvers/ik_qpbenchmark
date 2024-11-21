@@ -5,15 +5,19 @@
 # Copyright 2024 Inria
 
 import argparse
-from typing import List, Optional
+from pathlib import Path
+from typing import List, Tuple
 
+import h5py
+import ik_bench
 import numpy as np
 import pink
 import qpsolvers
 from numpy.typing import NDArray
 from pink import build_ik
+from qpbenchmark.exceptions import ResultsError
 
-import ik_bench
+data_dir = Path(__file__).resolve().parent.parent / "data"
 
 
 def parse_command_line_arguments() -> argparse.Namespace:
