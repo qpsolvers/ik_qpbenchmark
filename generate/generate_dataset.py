@@ -24,11 +24,6 @@ def parse_command_line_arguments() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "scenario",
-        help="name of the scenario to load",
-        choices=list([name for name in ik_bench.scenarios.keys()]),
-    )
-    parser.add_argument(
         "--damping",
         help="Thikonov damping value for differential IK",
         type=float,
@@ -39,6 +34,11 @@ def parse_command_line_arguments() -> argparse.Namespace:
         help="solver for the QP-based approach",
         default="proxqp",
         choices=qpsolvers.available_solvers,
+    )
+    parser.add_argument(
+        "--scenario",
+        help="generate problems only from a single scenario",
+        choices=list([name for name in ik_bench.scenarios.keys()]),
     )
     parser.add_argument(
         "--timestep",
