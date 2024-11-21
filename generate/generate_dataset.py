@@ -79,19 +79,24 @@ def generate_scenario(
     scenario = ik_bench.scenarios[scenario_name]
     scene = ik_bench.Scene(scenario)
     scene.reset()
-    for it_num, t in enumerate(np.arange(0.0, scenario.duration, dt)):
-        scene.step_targets(dt)
-        scene.update_viewer()
-        velocity = solve_qp(
-            scene.configuration,
-            scene.tasks,
-            dt,
-            qpsolver,
-            damping,
-        )
-        if verbose:
-            print(f"t={t:.2f}\tq={np.round(scene.configuration.q, 2)}\t")
-        scene.step(velocity, dt)
+    with h5py.File(data_dir / f"{scenario_name}.hdf5", "w") as file:
+        problems = file.create_group("problems")
+        for it_num, t in enumerate(np.arange(0.0, scenario.duration, dt)):
+            scene.step_targets(dt)
+            scene.update_viewer()
+            qp, velocity = build_and_solve_qp(
+                scene.configuration,
+                scene.tasks,
+                dt,
+                qpsolver,
+                damping,
+            )
+            qp_data = problems.create_group(f"qp_{it_num:06}")
+            for key in ("P", "q", "G", "h", "A", "b", "lb", "ub"):
+                qp_data.create_group(key)
+                if qp.__dict__[key] is not None:
+                    qp_data[f"{key}/data"] = qp.__dict__[key]
+            scene.step(velocity, dt)
 
 
 if __name__ == "__main__":
