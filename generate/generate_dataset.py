@@ -70,7 +70,7 @@ def build_and_solve_qp(
     return qp, velocity
 
 
-def main(
+def generate_scenario(
     scenario_name: str,
     dt: float,
     qpsolver: str,
@@ -96,10 +96,12 @@ def main(
 
 if __name__ == "__main__":
     args = parse_command_line_arguments()
-    main(
-        args.scenario,
-        args.timestep,
-        args.qpsolver,
-        args.damping,
-        args.verbose,
+    scenarios: List[str] = (
+        [args.scenario]
+        if args.scenario is not None
+        else list(ik_bench.scenarios.keys())
     )
+    for scenario_name in scenarios:
+        generate_scenario(
+            scenario_name, args.timestep, args.qpsolver, args.damping
+        )
