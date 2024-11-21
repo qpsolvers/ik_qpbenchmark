@@ -46,12 +46,6 @@ def parse_command_line_arguments() -> argparse.Namespace:
         type=float,
         default=0.005,
     )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        help="More detailed output",
-        action="store_true",
-    )
     return parser.parse_args()
 
 
@@ -77,8 +71,7 @@ def main(
     dt: float,
     qpsolver: str,
     damping: float,
-    verbose: bool,
-) -> None:
+):
     scenario = ik_bench.scenarios[scenario_name]
     scene = ik_bench.Scene(scenario)
     scene.reset()
