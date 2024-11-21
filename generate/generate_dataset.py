@@ -53,21 +53,21 @@ def parse_command_line_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def solve_qp(
+def build_and_solve_qp(
     configuration,
     tasks: List[pink.Task],
     dt: float,
     qpsolver: str,
     damping: float,
-) -> Optional[NDArray[float]]:
+) -> Tuple[qpsolvers.Problem, NDArray[float]]:
     configuration.update()
     qp = build_ik(configuration, tasks, dt, damping=damping)
     result = qpsolvers.solve_problem(qp, solver=qpsolver)
     Delta_q = result.x
     if Delta_q is None:
-        return None
+        raise ResultsError("Could not solve differential IK problem")
     velocity = Delta_q / dt
-    return velocity
+    return qp, velocity
 
 
 def main(
