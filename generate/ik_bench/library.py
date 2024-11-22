@@ -123,10 +123,10 @@ scenarios["gen3"] = Scenario(
 
 # =============================================================================
 
-scenarios["iiwa"] = Scenario(
-    name="iiwa",
+scenarios["iiwa14"] = Scenario(
+    name="iiwa14",
     duration=10.0,  # [s]
-    robot_description="iiwa_description",
+    robot_description="iiwa14_description",
     trajectories=[
         BackAndForthTrajectory(
             FrameTask(
