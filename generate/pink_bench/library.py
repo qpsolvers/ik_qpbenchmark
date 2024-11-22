@@ -1237,6 +1237,7 @@ scenarios["spryped"] = Scenario(
                 rotation=np.eye(3),
                 translation=np.array([-0.1, 0.0, -0.1]),
             ),
+            plot_axis=0,
         ),
         SwingFootTrajectory(
             FrameTask(

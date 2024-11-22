@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import List, Tuple
 
 import h5py
-import ik_bench
 import numpy as np
 import pink
+import pink_bench
 import qpsolvers
 from numpy.typing import NDArray
 from pink import build_ik
@@ -43,7 +43,7 @@ def parse_command_line_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--scenario",
         help="generate problems only from a single scenario",
-        choices=list([name for name in ik_bench.scenarios.keys()]),
+        choices=list([name for name in pink_bench.scenarios.keys()]),
     )
     parser.add_argument(
         "--timestep",
@@ -85,8 +85,8 @@ def generate_scenario(
     visualize: bool,
 ):
     logging.info('Generating problems for scenario "%s"...', scenario_name)
-    scenario = ik_bench.scenarios[scenario_name]
-    scene = ik_bench.Scene(scenario, visualize=visualize)
+    scenario = pink_bench.scenarios[scenario_name]
+    scene = pink_bench.Scene(scenario, visualize=visualize)
     scene.reset()
     with h5py.File(data_dir / f"{scenario_name}.hdf5", "w") as file:
         problems = file.create_group("problems")
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     scenarios: List[str] = (
         [args.scenario]
         if args.scenario is not None
-        else list(ik_bench.scenarios.keys())
+        else list(pink_bench.scenarios.keys())
     )
     for scenario_name in scenarios:
         generate_scenario(

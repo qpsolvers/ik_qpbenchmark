@@ -398,7 +398,7 @@ class LIPMWalkingTrajectory(Trajectory):
         for axis in (0, 1):
             self.mpc_problem.update_initial_state(self.state[axis])
             self.update_goal_and_constraints(axis)
-            self.plan[axis] = solve_mpc(self.mpc_problem, solver="proxqp")
+            self.plan[axis] = solve_mpc(self.mpc_problem, solver="clarabel")
             if axis == self.plot_axis:
                 plot_plan(
                     self.__live_plot,
