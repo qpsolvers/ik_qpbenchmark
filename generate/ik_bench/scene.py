@@ -17,18 +17,19 @@ from robot_descriptions.loaders.pinocchio import load_robot_description
 
 from .scenario import Scenario
 
-_MANICURE = False
-
 
 class Scene:
     configuration: pink.Configuration
     robot: pin.RobotWrapper
 
-    def __init__(self, scenario: Scenario, record: bool = False):
+    def __init__(
+        self, scenario: Scenario, visualize: bool = False, record: bool = False
+    ):
         """Create a new scene.
 
         Args:
             scenario: Scene description.
+            visualize: If set, visualize scenario in MeshCat.
             record: If set, each frame will be rendered to an image as well.
 
         Raises:
@@ -41,12 +42,11 @@ class Scene:
             root_joint=scenario.root_joint,
         )
 
-        visualizer = start_meshcat_visualizer(robot)
-        viewer = visualizer.viewer
-        if _MANICURE:
-            viewer["/Background"].set_property("top_color", [1] * 3)
-            viewer["/Background"].set_property("bottom_color", [1] * 3)
-            viewer["/Grid"].set_property("visible", False)
+        visualizer = None
+        viewer = None
+        if visualize:
+            visualizer = start_meshcat_visualizer(robot)
+            viewer = visualizer.viewer
 
         if len(scenario.trajectories) < 1:
             robot_frames = [
@@ -71,12 +71,13 @@ class Scene:
                 f"names must be in {valid_joints}"
             ) from exn
 
-        visualizer.display(q_init)
+        if visualize:
+            visualizer.display(q_init)
         configuration = pink.Configuration(robot.model, robot.data, q_init)
         for trajectory in scenario.trajectories:
             trajectory.reset(configuration, viewer)
             task = trajectory.task
-            if hasattr(task, "frame"):
+            if viewer is not None and hasattr(task, "frame"):
                 frame = task.frame
                 meshcat_shapes.frame(viewer[f"{frame}_current"], opacity=1.0)
                 meshcat_shapes.frame(viewer[f"{frame}_target"], opacity=0.5)
@@ -94,7 +95,8 @@ class Scene:
     def reset(self):
         model = self.robot.model
         data = self.robot.data
-        self.visualizer.display(self.q_init)
+        if self.visualizer is not None:
+            self.visualizer.display(self.q_init)
         self.configuration = pink.Configuration(model, data, self.q_init)
         for trajectory in self.scenario.trajectories:
             trajectory.reset(self.configuration, self.viewer)
@@ -117,6 +119,8 @@ class Scene:
 
     def update_viewer(self) -> None:
         """Update frames in the viewer."""
+        if self.viewer is None:
+            return
         for task in self.frame_tasks:
             if not hasattr(task, "frame"):
                 continue
@@ -128,9 +132,10 @@ class Scene:
 
     def step(self, velocity: NDArray[float], dt: float) -> None:
         self.configuration.integrate_inplace(velocity, dt)
-        self.visualizer.display(self.configuration.q)
-        if self.record:
-            fname = f"videos/meshcat_{self.recording_index:04d}.png"
-            self.recording_index += 1
-            with open(fname, "wb") as fp:
-                self.viewer.get_image().save(fp)
+        if self.visualizer is not None:
+            self.visualizer.display(self.configuration.q)
+            if self.record:
+                fname = f"videos/meshcat_{self.recording_index:04d}.png"
+                self.recording_index += 1
+                with open(fname, "wb") as fp:
+                    self.viewer.get_image().save(fp)

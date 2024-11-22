@@ -27,12 +27,13 @@ def display_foot_area(
     viewer: Visualizer, transform_contact_to_world: pin.SE3, foot_size
 ):
     prefix = str(uuid.uuid4())
-    meshcat_shapes.point(
-        viewer[f"{prefix}_center"],
-        radius=0.02,
-        color=0x00FF00,
-    )
-    viewer[f"{prefix}_center"].set_transform(transform_contact_to_world.np)
+    if viewer is not None:
+        meshcat_shapes.point(
+            viewer[f"{prefix}_center"],
+            radius=0.02,
+            color=0x00FF00,
+        )
+        viewer[f"{prefix}_center"].set_transform(transform_contact_to_world.np)
     for i in range(4):
         u_x = -1 if i < 2 else +1
         u_y = -1 if i % 2 == 0 else +1
@@ -45,12 +46,13 @@ def display_foot_area(
         transform_vertex_to_world = (
             transform_contact_to_world * transform_vertex_to_contact
         )
-        meshcat_shapes.point(
-            viewer[f"{prefix}_{i}"],
-            radius=0.01,
-            color=0xFF0000,
-        )
-        viewer[f"{prefix}_{i}"].set_transform(transform_vertex_to_world.np)
+        if viewer is not None:
+            meshcat_shapes.point(
+                viewer[f"{prefix}_{i}"],
+                radius=0.01,
+                color=0xFF0000,
+            )
+            viewer[f"{prefix}_{i}"].set_transform(transform_vertex_to_world.np)
 
 
 def plot_plan(
@@ -368,7 +370,7 @@ class LIPMWalkingTrajectory(Trajectory):
         if self.plot_axis is not None:
             self.update_plot()
         self.nb_steps += 1
-        if self.nb_steps % 30 == 0 and self.annotate_viz:
+        if self.nb_steps % 30 == 0 and self.annotate_viz and self.viewer:
             meshcat_shapes.point(
                 self.viewer[f"target_{self.nb_steps}"],
                 radius=0.015,
