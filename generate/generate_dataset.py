@@ -11,6 +11,7 @@ from typing import List, Tuple
 import h5py
 import ik_bench
 import numpy as np
+from qpbenchmark.spdlog import logging
 import pink
 import qpsolvers
 from numpy.typing import NDArray
@@ -76,6 +77,7 @@ def generate_scenario(
     qpsolver: str,
     damping: float,
 ):
+    logging.info('Generating problems for scenario "%s"...', scenario_name)
     scenario = ik_bench.scenarios[scenario_name]
     scene = ik_bench.Scene(scenario)
     scene.reset()
