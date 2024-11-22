@@ -11,12 +11,12 @@ from typing import List, Tuple
 import h5py
 import ik_bench
 import numpy as np
-from qpbenchmark.spdlog import logging
 import pink
 import qpsolvers
 from numpy.typing import NDArray
 from pink import build_ik
 from qpbenchmark.exceptions import ResultsError
+from qpbenchmark.spdlog import logging
 
 data_dir = Path(__file__).resolve().parent.parent / "data"
 
@@ -51,6 +51,12 @@ def parse_command_line_arguments() -> argparse.Namespace:
         type=float,
         default=0.005,
     )
+    parser.add_argument(
+        "--visualize",
+        help="Display scenes in MeshCat while they play out",
+        default=False,
+        action="store_true",
+    )
     return parser.parse_args()
 
 
@@ -76,10 +82,11 @@ def generate_scenario(
     dt: float,
     qpsolver: str,
     damping: float,
+    visualize: bool,
 ):
     logging.info('Generating problems for scenario "%s"...', scenario_name)
     scenario = ik_bench.scenarios[scenario_name]
-    scene = ik_bench.Scene(scenario)
+    scene = ik_bench.Scene(scenario, visualize=visualize)
     scene.reset()
     with h5py.File(data_dir / f"{scenario_name}.hdf5", "w") as file:
         problems = file.create_group("problems")
@@ -110,5 +117,9 @@ if __name__ == "__main__":
     )
     for scenario_name in scenarios:
         generate_scenario(
-            scenario_name, args.timestep, args.qpsolver, args.damping
+            scenario_name,
+            dt=args.timestep,
+            qpsolver=args.qpsolver,
+            damping=args.damping,
+            visualize=args.visualize,
         )
