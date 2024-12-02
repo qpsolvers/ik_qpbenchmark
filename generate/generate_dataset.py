@@ -63,52 +63,30 @@ def parse_command_line_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_and_solve_qp(
-    configuration,
-    tasks: List[pink.Task],
-    dt: float,
-    qpsolver: str,
-    damping: float,
-) -> Tuple[qpsolvers.Problem, NDArray[float]]:
-    configuration.update()
-    qp = build_ik(configuration, tasks, dt, damping=damping)
-    result = qpsolvers.solve_problem(qp, solver=qpsolver)
-    Delta_q = result.x
-    if Delta_q is None:
-        raise ResultsError("Could not solve differential IK problem")
-    velocity = Delta_q / dt
-    return qp, velocity
-
-
-def generate_scenario(
+def generate_problems(
+    scene: pink_bench.Scene,
     scenario_name: str,
     dt: float,
     qpsolver: str,
     damping: float,
-    visualize: bool,
-):
-    logging.info('Generating problems for scenario "%s"...', scenario_name)
-    scenario = pink_bench.scenarios[scenario_name]
-    scene = pink_bench.Scene(scenario, visualize=visualize)
-    scene.reset()
-    with h5py.File(data_dir / f"{scenario_name}.hdf5", "w") as file:
-        problems = file.create_group("problems")
-        for it_num, t in enumerate(np.arange(0.0, scenario.duration, dt)):
-            scene.step_targets(dt)
-            scene.update_viewer()
-            qp, velocity = build_and_solve_qp(
-                scene.configuration,
-                scene.tasks,
-                dt,
-                qpsolver,
-                damping,
+) -> qpbenchmark.ProblemList:
+    problems = qpbenchmark.ProblemList()
+    for it_num, t in enumerate(np.arange(0.0, scenario.duration, dt)):
+        scene.step_targets(dt)
+        qp = build_ik(scene.configuration, scene.tasks, dt, damping=damping)
+        problems.append(
+            qpbenchmark.Problem.from_qpsolvers(
+                qp,
+                name=f"{scenario_name}_{it_num:05}",
             )
-            qp_data = problems.create_group(f"qp_{it_num:06}")
-            for key in ("P", "q", "G", "h", "A", "b", "lb", "ub"):
-                qp_data.create_group(key)
-                if qp.__dict__[key] is not None:
-                    qp_data[f"{key}/data"] = qp.__dict__[key]
-            scene.step(velocity, dt)
+        )
+        result = qpsolvers.solve_problem(qp, solver=qpsolver)
+        Delta_q = result.x
+        if Delta_q is None:
+            raise ResultsError("Could not solve differential IK problem")
+        velocity = Delta_q / dt
+        scene.step_velocity(velocity, dt)
+    return problems
 
 
 if __name__ == "__main__":
@@ -132,5 +110,5 @@ if __name__ == "__main__":
             dt=args.timestep,
             qpsolver=args.qpsolver,
             damping=args.damping,
-            visualize=args.visualize,
         )
+        problems.to_parquet(data_dir / f"{scenario_name}.parquet")
