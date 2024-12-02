@@ -10,12 +10,14 @@ import meshcat_shapes
 import pink
 import pinocchio as pin
 from numpy.typing import NDArray
+from pink import solve_ik
 from pink.tasks import FrameTask
 from pink.utils import custom_configuration_vector
 from pink.visualization import start_meshcat_visualizer
 from robot_descriptions.loaders.pinocchio import load_robot_description
 
 from .scenario import Scenario
+from .trajectories import LIPMWalkingTrajectory
 
 
 class Scene:
@@ -121,12 +123,15 @@ class Scene:
             if isinstance(trajectory.task, FrameTask)
         ]
 
-    def step_targets(self, dt: float):
+    def step_targets(self, dt: float) -> None:
+        """Advance targets for a given duration.
+
+        Args:
+            dt: Duration in seconds.
+        """
         for trajectory in self.trajectories:
             trajectory.step(dt)
 
-    def update_viewer(self) -> None:
-        """Update frames in the viewer."""
         if self.viewer is None:
             return
         for task in self.frame_tasks:
@@ -138,7 +143,13 @@ class Scene:
             self.viewer[f"{frame}_target"].set_transform(target.np)
             self.viewer[f"{frame}_current"].set_transform(current.np)
 
-    def step(self, velocity: NDArray[float], dt: float) -> None:
+    def step_velocity(self, velocity: NDArray[float], dt: float) -> None:
+        """Advance the scene with a given robot velocity.
+
+        Args:
+            velocity: Velocity vector in the robot's tangent space.
+            dt: Duration in seconds.
+        """
         self.configuration.integrate_inplace(velocity, dt)
         if self.visualizer is not None:
             self.visualizer.display(self.configuration.q)
@@ -147,3 +158,19 @@ class Scene:
                 self.recording_index += 1
                 with open(fname, "wb") as fp:
                     self.viewer.get_image().save(fp)
+
+    def step(self, dt: float, solver: str) -> None:
+        """Advance the scene.
+
+        Args:
+            dt: Duration inseconds.
+            solver: Backend quadratic programming (QP) solver.
+        """
+        self.step_targets(dt)
+        velocity = solve_ik(
+            self.configuration,
+            self.tasks,
+            dt,
+            solver=solver,
+        )
+        self.step_velocity(velocity, dt)
