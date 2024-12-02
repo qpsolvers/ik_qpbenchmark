@@ -6,19 +6,16 @@
 
 import argparse
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
-import h5py
 import numpy as np
-import pink
-import pink_bench
+import qpbenchmark
 import qpsolvers
-from numpy.typing import NDArray
 from pink import build_ik
 from qpbenchmark.exceptions import ResultsError
 from qpbenchmark.spdlog import logging
 
-data_dir = Path(__file__).resolve().parent.parent / "data"
+import pink_bench
 
 
 def parse_command_line_arguments() -> argparse.Namespace:
@@ -33,6 +30,12 @@ def parse_command_line_arguments() -> argparse.Namespace:
         help="Thikonov damping value for differential IK",
         type=float,
         default=1e-12,
+    )
+    parser.add_argument(
+        "--plot-mpc-axis",
+        help="plot to debug LIP model predictive control",
+        choices=("x", "y", None),
+        default=None,
     )
     parser.add_argument(
         "--qpsolver",
@@ -115,8 +118,16 @@ if __name__ == "__main__":
         if args.scenario is not None
         else list(pink_bench.scenarios.keys())
     )
+    data_dir = Path(__file__).resolve().parent.parent / "data"
     for scenario_name in scenarios:
-        generate_scenario(
+        logging.info('Generating problems for scenario "%s"...', scenario_name)
+        scenario = pink_bench.scenarios[scenario_name]
+        scene = pink_bench.Scene(scenario, visualize=args.visualize)
+        if args.plot_mpc_axis is not None:
+            plot_axis = 0 if args.plot_mpc_axis == "x" else 1
+            scene.plot_mpc_axis(plot_axis)
+        problems = generate_problems(
+            scene,
             scenario_name,
             dt=args.timestep,
             qpsolver=args.qpsolver,
