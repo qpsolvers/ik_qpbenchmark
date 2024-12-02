@@ -263,34 +263,37 @@ class LIPMWalkingTrajectory(Trajectory):
             ),
         )
 
-        if plot_axis is not None:
-            horizon_duration = sampling_period * nb_timesteps
-            self.__live_plot = LivePlot(
-                xlim=(0, horizon_duration + sampling_period),
-                ylim=(-1, 1),
-            )
-            self.__live_plot.add_line("pos", "b-")
-            self.__live_plot.add_line("cur_pos", "bo", lw=2)
-            self.__live_plot.add_line("cur_zmp", "ro", lw=2)
-            self.__live_plot.add_line("goal_pos", "ko", lw=2)
-            self.__live_plot.add_line("zmp", "r-")
-            self.__live_plot.add_line("zmp_min", "g:")
-            self.__live_plot.add_line("zmp_max", "b:")
-            self.__goal_pos = np.array([0.0, 0.0])
-
+        self.__goal_pos = None
+        self.__live_plot = None
+        self.annotate_viz = annotate_viz
         self.dsp_duration = dsp_duration
         self.foot_size = foot_size
+        self.foot_spacing = foot_spacing
         self.init_vel_scale = init_vel_scale
         self.lateral_offset = lateral_offset
         self.left_foot_frame = left_foot_frame
         self.nb_timesteps = nb_timesteps
+        self.plot_axis = None
         self.sampling_period = sampling_period
-        self.foot_spacing = foot_spacing
-        self.plot_axis = plot_axis
         self.ssp_duration = ssp_duration
         self.stride = stride
         self.transform_target_to_root = transform_target_to_root
-        self.annotate_viz = annotate_viz
+
+    def init_plot(self, plot_axis: int) -> None:
+        horizon_duration = self.sampling_period * self.nb_timesteps
+        self.__live_plot = LivePlot(
+            xlim=(0, horizon_duration + self.sampling_period),
+            ylim=(-1, 1),
+        )
+        self.__live_plot.add_line("pos", "b-")
+        self.__live_plot.add_line("cur_pos", "bo", lw=2)
+        self.__live_plot.add_line("cur_zmp", "ro", lw=2)
+        self.__live_plot.add_line("goal_pos", "ko", lw=2)
+        self.__live_plot.add_line("zmp", "r-")
+        self.__live_plot.add_line("zmp_min", "g:")
+        self.__live_plot.add_line("zmp_max", "b:")
+        self.__goal_pos = np.array([0.0, 0.0])
+        self.plot_axis = plot_axis
 
     def reset(self, configuration: pink.Configuration, viewer: Visualizer):
         super().reset(configuration, viewer)

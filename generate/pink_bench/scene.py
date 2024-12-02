@@ -23,7 +23,10 @@ class Scene:
     robot: pin.RobotWrapper
 
     def __init__(
-        self, scenario: Scenario, visualize: bool = False, record: bool = False
+        self,
+        scenario: Scenario,
+        visualize: bool = False,
+        record: bool = False,
     ):
         """Create a new scene.
 
@@ -91,6 +94,11 @@ class Scene:
         self.trajectories = scenario.trajectories
         self.viewer = viewer
         self.visualizer = visualizer
+
+    def plot_mpc_axis(self, plot_axis: int) -> None:
+        for trajectory in self.trajectories:
+            if isinstance(trajectory, LIPMWalkingTrajectory):
+                trajectory.init_plot(plot_axis)
 
     def reset(self):
         model = self.robot.model
