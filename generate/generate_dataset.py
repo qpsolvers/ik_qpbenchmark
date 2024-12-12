@@ -135,6 +135,9 @@ if __name__ == "__main__":
     data_dir = Path(__file__).resolve().parent.parent / "data"
     problems = qpbenchmark.ProblemList()
     for scenario_name in scenarios:
+        if args.record and os.path.exists(f"videos/{scenario_name}.mp4"):
+            logging.info("Skipping %s as video exists...", scenario_name)
+            continue
         logging.info('Generating problems for scenario "%s"...', scenario_name)
         scenario = pink_bench.scenarios[scenario_name]
         scene = pink_bench.Scene(scenario, visualize=args.visualize)
