@@ -5,6 +5,9 @@
 # Copyright 2024 Inria
 
 import argparse
+import glob
+import os
+import subprocess
 from pathlib import Path
 from typing import List
 
@@ -49,6 +52,12 @@ def parse_command_line_arguments() -> argparse.Namespace:
         default=0.005,
     )
     parser.add_argument(
+        "--record",
+        help="Record video from MeshCat",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
         "--visualize",
         help="Display scenes in MeshCat while they play out",
         default=False,
@@ -80,6 +89,40 @@ def generate_problems(
         velocity = Delta_q / dt
         scene.step_velocity(velocity, dt)
     return problems
+
+
+def save_video(name: str, frequency: int) -> None:
+    video_output = f"videos/{name}.mp4"
+    print(f"Saving video to {video_output}...")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-r",
+            f"{frequency}",
+            "-f",
+            "image2",
+            "-s",
+            "1920x1080",
+            "-i",
+            f"videos/{name}_%04d.png",
+            "-vcodec",
+            "libx264",
+            "-crf",
+            "20",
+            "-pix_fmt",
+            "yuv420p",
+            "-y",
+            video_output,
+        ]
+    )
+    print(f"Saved video to {video_output}")
+
+    save_dir = f"videos/src-{name}"
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    for img in glob.glob(f"videos/{name}_*.png"):
+        subprocess.run(["mv", img, save_dir])
+    print(f"Backed up images to {save_dir}")
 
 
 if __name__ == "__main__":
