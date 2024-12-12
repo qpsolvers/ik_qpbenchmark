@@ -140,7 +140,11 @@ if __name__ == "__main__":
             continue
         logging.info('Generating problems for scenario "%s"...', scenario_name)
         scenario = pink_bench.scenarios[scenario_name]
-        scene = pink_bench.Scene(scenario, visualize=args.visualize)
+        scene = pink_bench.Scene(
+            scenario,
+            visualize=args.visualize,
+            record=args.record,
+        )
         if args.plot_mpc_axis is not None:
             plot_axis = 0 if args.plot_mpc_axis == "x" else 1
             scene.plot_mpc_axis(plot_axis)
@@ -152,4 +156,5 @@ if __name__ == "__main__":
                 qpsolver=args.qpsolver,
             )
         )
+        save_video(scenario_name, frequency=int(1.0 / args.timestep))
     problems.to_parquet(data_dir / "ik_qpbenchmark.parquet")
