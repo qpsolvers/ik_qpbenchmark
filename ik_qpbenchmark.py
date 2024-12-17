@@ -36,5 +36,7 @@ class IkQpbenchmark(qpbenchmark.ParquetTestSet):
 
 if __name__ == "__main__":
     test_set_path = Path(__file__).resolve()
-    results_path = test_set_path.parent / "results" / "qpbenchmark_results.csv"
+    results_path = (
+        test_set_path.parent / "results" / "qpbenchmark_results.parquet"
+    )
     main(test_set_path=test_set_path, results_path=results_path)
