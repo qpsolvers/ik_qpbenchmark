@@ -12,13 +12,12 @@ from pathlib import Path
 from typing import List
 
 import numpy as np
+import pink_bench
 import qpbenchmark
 import qpsolvers
 from pink import build_ik
 from qpbenchmark.exceptions import ResultsError
 from qpbenchmark.spdlog import logging
-
-import pink_bench
 
 
 def parse_command_line_arguments() -> argparse.Namespace:
@@ -156,5 +155,6 @@ if __name__ == "__main__":
                 qpsolver=args.qpsolver,
             )
         )
-        save_video(scenario_name, frequency=int(1.0 / args.timestep))
+        if args.record:
+            save_video(scenario_name, frequency=int(1.0 / args.timestep))
     problems.to_parquet(data_dir / "ik_qpbenchmark.parquet")
