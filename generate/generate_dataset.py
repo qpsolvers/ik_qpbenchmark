@@ -51,12 +51,6 @@ def parse_command_line_arguments() -> argparse.Namespace:
         default=0.005,
     )
     parser.add_argument(
-        "--record",
-        help="Record video from MeshCat",
-        default=False,
-        action="store_true",
-    )
-    parser.add_argument(
         "--visualize",
         help="Display scenes in MeshCat while they play out",
         default=False,
@@ -134,16 +128,9 @@ if __name__ == "__main__":
     data_dir = Path(__file__).resolve().parent.parent / "data"
     problems = qpbenchmark.ProblemList()
     for scenario_name in scenarios:
-        if args.record and os.path.exists(f"videos/{scenario_name}.mp4"):
-            logging.info("Skipping %s as video exists...", scenario_name)
-            continue
         logging.info('Generating problems for scenario "%s"...', scenario_name)
         scenario = pink_bench.scenarios[scenario_name]
-        scene = pink_bench.Scene(
-            scenario,
-            visualize=args.visualize,
-            record=args.record,
-        )
+        scene = pink_bench.Scene(scenario, visualize=args.visualize)
         if args.plot_mpc_axis is not None:
             plot_axis = 0 if args.plot_mpc_axis == "x" else 1
             scene.plot_mpc_axis(plot_axis)
@@ -155,6 +142,4 @@ if __name__ == "__main__":
                 qpsolver=args.qpsolver,
             )
         )
-        if args.record:
-            save_video(scenario_name, frequency=int(1.0 / args.timestep))
     problems.to_parquet(data_dir / "ik_qpbenchmark.parquet")
