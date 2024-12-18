@@ -44,7 +44,9 @@ If you contribute to this repository, don't forget to add yourself to the BibTeX
 
 ## See also
 
-Related test sets that may be relevant to your use cases:
+Quadratic programs in this test set were generated with [pink bench](https://github.com/stephane-caron/pink_bench).
+
+There are other test sets in qpbenchmark that may be relevant to your use cases:
 
 - [Free-for-all](https://github.com/qpsolvers/free_for_all_qpbenchmark): community-built test set, new problems welcome!
 - [Maros-Meszaros test set](https://github.com/qpsolvers/maros_meszaros_qpbenchmark/): a standard test set with problems designed to be difficult.
