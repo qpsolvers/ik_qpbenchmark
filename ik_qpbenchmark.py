@@ -1,8 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
 # SPDX-License-Identifier: Apache-2.0
-# Copyright 2024 Inria
 
 from pathlib import Path
 
@@ -36,7 +32,5 @@ class IkQpbenchmark(qpbenchmark.ParquetTestSet):
 
 if __name__ == "__main__":
     test_set_path = Path(__file__).resolve()
-    results_path = (
-        test_set_path.parent / "results" / "qpbenchmark_results.parquet"
-    )
+    results_path = test_set_path.parent / "results" / "qpbenchmark_results.parquet"
     main(test_set_path=test_set_path, results_path=results_path)
