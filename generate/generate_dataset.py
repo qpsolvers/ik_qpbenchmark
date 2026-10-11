@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List
 
 import numpy as np
-import pink_bench
+import pink_motions
 import qpbenchmark
 import qpsolvers
 from pink import build_ik
@@ -42,7 +42,7 @@ def parse_command_line_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--scenario",
         help="generate problems only from a single scenario",
-        choices=list([name for name in pink_bench.scenarios.keys()]),
+        choices=list([name for name in pink_motions.scenarios.keys()]),
     )
     parser.add_argument(
         "--timestep",
@@ -60,7 +60,7 @@ def parse_command_line_arguments() -> argparse.Namespace:
 
 
 def generate_problems(
-    scene: pink_bench.Scene,
+    scene: pink_motions.Scene,
     scenario_name: str,
     dt: float,
     qpsolver: str,
@@ -123,14 +123,14 @@ if __name__ == "__main__":
     scenarios: List[str] = (
         [args.scenario]
         if args.scenario is not None
-        else list(pink_bench.scenarios.keys())
+        else list(pink_motions.scenarios.keys())
     )
     data_dir = Path(__file__).resolve().parent.parent / "data"
     problems = qpbenchmark.ProblemList()
     for scenario_name in scenarios:
         logging.info('Generating problems for scenario "%s"...', scenario_name)
-        scenario = pink_bench.scenarios[scenario_name]
-        scene = pink_bench.Scene(scenario, visualize=args.visualize)
+        scenario = pink_motions.scenarios[scenario_name]
+        scene = pink_motions.Scene(scenario, visualize=args.visualize)
         if args.plot_mpc_axis is not None:
             plot_axis = 0 if args.plot_mpc_axis == "x" else 1
             scene.plot_mpc_axis(plot_axis)

@@ -35,8 +35,8 @@ If you use `qpbenchmark` in your works, please cite all its contributors as foll
   author = {Caron, Stéphane and Zaki, Akram and Otta, Pavel and Arnström, Daniel and Carpentier, Justin and Yang, Fengyu and Leziart, Pierre-Alexandre},
   url = {https://github.com/qpsolvers/qpbenchmark},
   license = {Apache-2.0},
-  version = {2.4.0},
-  year = {2024}
+  version = {2.5.0},
+  year = {2025}
 }
 ```
 
@@ -44,7 +44,7 @@ Don't forget to add yourself to the BibTeX above and to `CITATION.cff` if you co
 
 ## See also
 
-Quadratic programs in this test set were generated with [pink bench](https://github.com/stephane-caron/pink_bench).
+Quadratic programs in this test set were generated with the [pink motions](https://github.com/pink-kinematics/pink_motions) library.
 
 There are other test sets in qpbenchmark that may be relevant to your use cases:
 
