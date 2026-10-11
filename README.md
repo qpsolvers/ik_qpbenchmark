@@ -6,11 +6,10 @@ This repository contains quadratic programs (QPs) arising from differential inve
 
 ## Installation
 
-The recommended process is to install the benchmark and all solvers in an isolated environment using `conda`:
+The recommended process is to install the benchmark and all solvers using [pixi](https://pixi.prefix.dev/):
 
 ```console
-conda env create -f environment.yaml
-conda activate ik_qpbenchmark
+pixi install
 ```
 
 It is also possible to install the benchmark [from PyPI](https://github.com/qpsolvers/qpbenchmark#installation).
@@ -20,27 +19,14 @@ It is also possible to install the benchmark [from PyPI](https://github.com/qpso
 Run the test set as follows:
 
 ```
-python ./ik_qpbenchmark.py run
+pixi run ik-qpbenchmark.py
 ```
 
 The outcome is a standardized report comparing all available solvers against the different [benchmark metrics](https://github.com/qpsolvers/qpbenchmark#metrics). You can check out and post your own results in the [Results forum](https://github.com/qpsolvers/ik_qpbenchmark/discussions/categories/results).
 
 ## Citation
 
-If you use `qpbenchmark` in your works, please cite all its contributors as follows:
-
-```bibtex
-@software{qpbenchmark,
-  title = {{qpbenchmark: Benchmark for quadratic programming solvers available in Python}},
-  author = {Caron, Stéphane and Zaki, Akram and Otta, Pavel and Arnström, Daniel and Carpentier, Justin and Yang, Fengyu and Leziart, Pierre-Alexandre},
-  url = {https://github.com/qpsolvers/qpbenchmark},
-  license = {Apache-2.0},
-  version = {2.5.0},
-  year = {2025}
-}
-```
-
-Don't forget to add yourself to the BibTeX above and to `CITATION.cff` if you contribute to this repository.
+This test set is run using `qpbenchmark`. If you use it in your works, you can refer to it using [this citation](https://github.com/qpsolvers/qpbenchmark#citation).
 
 ## See also
 
